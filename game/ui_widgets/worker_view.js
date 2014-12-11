@@ -73,7 +73,9 @@ var WorkerView = Views.createViewType(
 
       if (!this.moving) {
         if (nextX != this.uiGroup.x || nextY != this.uiGroup.y) {
-          var time = Math.hypot(this.uiGroup.x-nextX,this.uiGroup.y-nextY) * 5;
+          var dX = this.uiGroup.x-nextX;
+          var dY = this.uiGroup.y-nextY;
+          var time = Math.sqrt(dX*dX + dY*dY) * 5;
           var tween = game.add.tween(this.uiGroup).to({ x: nextX, y: nextY }, time, Phaser.Easing.Quadratic.InOut);
           tween.onComplete.add(this.onMoveComplete, this);
           tween.start();
@@ -162,7 +164,12 @@ var WorkerView = Views.createViewType(
     },
 
     animatePath: function() {
-      var sign = Math.sign(this.worker.targetRegionIndex-this.worker.currentRegionIndex);
+      var sign = 0;
+      if (this.worker.targetRegionIndex > this.worker.currentRegionIndex) {
+          sign = 1;
+      } else if (this.worker.targetRegionIndex < this.worker.currentRegionIndex) {
+          sign = -1;
+      }
       var pointCounter = 0;
       for (var regionIndex = this.worker.currentRegionIndex; regionIndex != this.worker.targetRegionIndex; regionIndex += sign) {
         var region1 = this.worker.global.regions[regionIndex];
